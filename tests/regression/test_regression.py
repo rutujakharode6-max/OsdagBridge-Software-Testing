@@ -44,38 +44,38 @@ def test_regression_ob_bug_005_alpha_characters_handling(sample_24m_data):
 
 def test_regression_ob_bug_006_unicode_path_in_reports(sample_24m_data, tmp_path):
     """
-    REG-06 [OB-BUG-006]: Verify report generation handles Unicode directories gracefully.
+    REG-06 [OB-BUG-006]: Verify report export module handles Unicode directories gracefully.
     Status in issues.csv: Verified.
-    Validates file creation in paths containing non-ASCII / Unicode characters.
+    Executes ReportGenerator.export_report_file to write to paths containing non-ASCII / Devanagari characters.
     """
     unicode_dir = tmp_path / "डिजाइन_रिपोर्ट्स"
-    unicode_dir.mkdir(parents=True, exist_ok=True)
 
     project = BridgeProject.from_dict(sample_24m_data)
     summary = BridgeSolver.calculate_design(project)
     html_report = ReportGenerator.generate_html_report(project, summary)
 
     target_file = unicode_dir / "NH48_Report.html"
-    target_file.write_text(html_report, encoding="utf-8")
+    exported_path = ReportGenerator.export_report_file(target_file, html_report)
 
-    assert target_file.exists()
-    assert target_file.stat().st_size > 500
+    assert exported_path.exists()
+    assert exported_path.stat().st_size > 500
 
 
 def test_regression_ob_bug_007_impact_factor_clamping_for_large_spans(sample_24m_data):
     """
-    REG-07 [OB-BUG-007]: Verify impact factor is clamped to statutory floor of 0.10 for spans > 45m.
+    REG-07 [OB-BUG-007]: Verify BridgeSolver clamps impact factor to statutory floor of 0.10 for spans > 45m.
     Status in issues.csv: Verified.
-    Per IRC:6 Cl 208, impact factor formula 4.5 / (6.0 + span) must enforce lower bound of 0.10.
+    Per IRC:6 Cl 208, impact formula 4.5 / (6.0 + 50.0) yields 0.0803; the solver must enforce lower bound 0.10.
     """
     payload = dict(sample_24m_data)
     payload["geometry"] = dict(sample_24m_data["geometry"])
-    payload["geometry"]["span_length"] = 50.0  # Formula gives 4.5 / (6 + 50) = 0.0803 < 0.10
+    payload["geometry"]["span_length"] = 50.0  # Formula 4.5 / (6 + 50) = 0.0803 < 0.10
 
     project = BridgeProject.from_dict(payload)
-    span = project.geometry.span_length
-    impact_factor = min(0.35, max(0.10, 4.5 / (6.0 + span)))
-    assert impact_factor == 0.10, f"Expected clamped impact factor 0.10, got {impact_factor}"
+    summary = BridgeSolver.calculate_design(project)
+
+    # Verifies solver's internal calculation outputs clamped statutory factor
+    assert summary.impact_factor == 0.10, f"Expected solver clamped impact factor 0.10, got {summary.impact_factor}"
 
 
 def test_regression_corrupt_json_project_loading(tmp_path):

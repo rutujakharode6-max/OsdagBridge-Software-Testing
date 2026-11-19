@@ -1,7 +1,7 @@
 """
 Integration Tests: Official OsdagBridge Plate Girder Pipeline.
-Verifies the plate girder modules, evaluates structural engineering assertions,
-and documents upstream integration blockers without using silent skips.
+Evaluates official plate girder routines against structural engineering requirements,
+and reports incomplete or placeholder functionality as explicitly blocked / xfailed.
 """
 import importlib.util
 from pathlib import Path
@@ -107,11 +107,16 @@ def test_preliminary_sizing_upstream_defect_reproduction_ob_bug_003(official_sou
 
 
 @pytest.mark.integration
-def test_plate_girder_designer_stub_behavior(official_source):
+@pytest.mark.engineering
+@pytest.mark.xfail(
+    reason="Upstream blocker OB-BUG-002: Official designer returns placeholder stub {'design': 'ok'} lacking structural limit state calculations",
+    strict=False,
+)
+def test_plate_girder_designer_engineering_checks(official_source):
     """
-    INT-PG-06: Evaluates official designer routine.
-    Documents that upstream currently returns a placeholder stub dictionary {'design': 'ok'}
-    without structural stress/deflection evaluation per IRC:24.
+    INT-PG-06: Verifies that the plate girder designer produces actionable structural calculations.
+    Must evaluate limit states including moment capacity, shear capacity, and code compliance ratio.
+    Reports functionality as blocked due to upstream placeholder stub implementation.
     """
     pg_dir = official_source / "osdagbridge" / "core" / "bridge_types" / "plate_girder"
     dto_mod = _load_module_from_path("official_pg_dto_des", pg_dir / "dto.py")
@@ -120,16 +125,25 @@ def test_plate_girder_designer_stub_behavior(official_source):
     dto = dto_mod.PlateGirderDTO(name="24m_Highway_Bridge")
     result = des_mod.design(dto)
 
-    assert isinstance(result, dict)
-    assert "design" in result
+    # Must verify real engineering outputs, not mere presence of a placeholder dict key
+    required_metrics = ["moment_capacity_kNm", "shear_capacity_kN", "code_compliance"]
+    missing = [m for m in required_metrics if m not in result]
+    assert not missing, (
+        f"Structural Engineering Failure: Official designer returns placeholder stub without "
+        f"IRC:24 structural verification checks. Missing outputs: {missing}; got: {result}"
+    )
 
 
 @pytest.mark.integration
-def test_plate_girder_analyser_stub_behavior(official_source):
+@pytest.mark.engineering
+@pytest.mark.xfail(
+    reason="Upstream blocker OB-BUG-002: Official analyser returns placeholder stub {'result': 'ok'} lacking grillage analysis outputs",
+    strict=False,
+)
+def test_plate_girder_analyser_engineering_outputs(official_source):
     """
-    INT-PG-07: Evaluates official analyser routine.
-    Documents that upstream currently returns a placeholder stub dictionary {'result': 'ok'}
-    without running grillage analysis.
+    INT-PG-07: Verifies that the plate girder analyser computes bending moments and shear force distributions.
+    Reports functionality as blocked due to upstream placeholder stub implementation.
     """
     pg_dir = official_source / "osdagbridge" / "core" / "bridge_types" / "plate_girder"
     dto_mod = _load_module_from_path("official_pg_dto_ana", pg_dir / "dto.py")
@@ -138,8 +152,13 @@ def test_plate_girder_analyser_stub_behavior(official_source):
     dto = dto_mod.PlateGirderDTO(name="24m_Highway_Bridge")
     result = ana_mod.analyse(dto)
 
-    assert isinstance(result, dict)
-    assert "result" in result
+    # Must verify real analysis outputs
+    required_outputs = ["bending_moments", "shear_forces", "deflection_field"]
+    missing = [f for f in required_outputs if f not in result]
+    assert not missing, (
+        f"Structural Engineering Failure: Official analyser returns placeholder stub without "
+        f"grillage analysis outputs. Missing outputs: {missing}; got: {result}"
+    )
 
 
 @pytest.mark.functional

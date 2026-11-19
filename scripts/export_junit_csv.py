@@ -10,7 +10,8 @@ def convert_junit_to_csv(xml_path, csv_path):
     xml_path = Path(xml_path)
     csv_path = Path(csv_path)
     if not xml_path.exists():
-        raise FileNotFoundError(xml_path)
+        print(f"Warning: JUnit XML report not found at {xml_path}. Skipping CSV export.")
+        return 0
     root = ET.parse(xml_path).getroot()
     rows = []
     run_timestamp = datetime.now(timezone.utc).strftime("EXEC-%Y%m%d-%H%M%S")

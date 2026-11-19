@@ -38,13 +38,18 @@ def official_root():
             except OSError:
                 pass
     if not value:
-        pytest.fail(
-            "OSDAGBRIDGE_ROOT is not set. "
-            "Set it to the official OsdagBridge checkout."
+        pytest.skip(
+            "Official OsdagBridge checkout not found. "
+            "Clone osdag-admin/OsdagBridge side-by-side or set OSDAGBRIDGE_ROOT to run official integration tests.",
+            allow_module_level=True,
         )
     root = Path(value).resolve()
     if not root.is_dir():
-        pytest.fail(f"Official repository not found: {root}")
+        pytest.skip(
+            f"Official repository not found at {root}. "
+            "Set OSDAGBRIDGE_ROOT to a valid OsdagBridge checkout.",
+            allow_module_level=True,
+        )
     return root
 
 
@@ -52,7 +57,7 @@ def official_root():
 def official_source(official_root):
     source = official_root / "src"
     if not (source / "osdagbridge").is_dir():
-        pytest.fail("Official src/osdagbridge directory is missing.")
+        pytest.skip("Official src/osdagbridge directory is missing from checkout.")
     return source
 
 

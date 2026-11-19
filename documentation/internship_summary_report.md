@@ -28,7 +28,7 @@ The testing program bridges the gap between software quality engineering and civ
 | :--- | :--- | :--- |
 | Documented Test Cases | 50 | **50 Test Cases (`test_cases.csv`)** |
 | Functional Test Categories | 8 | **8 Categories (Installation, Project, Validation, Design, Results, Reports, Errors, Regression)** |
-| Automated Pytest Suite | > 60 | **76 Automated Tests (`test_results.csv` from real JUnit XML)** |
+| Automated Pytest Suite | > 60 | **77 Automated Tests (`test_results.csv` from real JUnit XML)** |
 | Documented Matrix Pass Rate | > 85% | **90.0% (45 Passed, 2 Failed, 3 Blocked — isolating upstream blockers)** |
 | Defects Identified & Documented | 5+ | **8 Defects Tracked (`OB-BUG-001` to `OB-BUG-008`)** |
 | Average Test Execution Duration | < 0.5s | **0.22 seconds total suite runtime** |

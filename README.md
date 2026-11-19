@@ -20,7 +20,7 @@ The project demonstrates end-to-end QA capabilities expected of a **Software Tes
 |---|---|
 | **Official Application Integration** | Functional & smoke tests that execute CLI commands, SI unit conversions, code registry lookups, desktop stubs, and isolate upstream blockers (`tests/integration/`) |
 | **50 Documented Test Cases** | Detailed scenarios covering Installation, Project Management, Validation, Design, Results, Reporting, Error Handling, and Regression (`test_cases.csv` & `reports/test_results.csv` — **45 Passed, 2 Failed, 3 Blocked, 90.0% Pass Rate**) |
-| **76 Automated Pytest Tests** | Real Pytest suite across `tests/unit/`, `tests/integration/`, `tests/ui_simulation/`, `tests/regression/` (`test_results.csv` exported directly from `reports/test_results/junit.xml`) |
+| **77 Automated Pytest Tests** | Real Pytest suite across `tests/unit/`, `tests/integration/`, `tests/ui_simulation/`, `tests/regression/` (`test_results.csv` exported directly from `reports/test_results/junit.xml` — **74 Passed, 3 XFailed upstream blockers**) |
 | **8 Documented Defects Tracked** | 4 Open upstream blockers in official application, and 4 Verified regression-guarded defects with reproducible test evidence (`issues.csv`) |
 | **Interactive QA Dashboard** | Streamlit web app reading live CSV telemetry, dynamic KPIs, real-time Pytest subprocess runner, and calculation verifier |
 | **Continuous Integration** | Multi-OS GitHub Actions workflow (Ubuntu + Windows, Python 3.11/3.12) executing single-pass JUnit/HTML reporting with strict failure exit codes |
@@ -67,9 +67,9 @@ The project demonstrates end-to-end QA capabilities expected of a **Software Tes
                               +------------------------------------------+
                               |       Defect Tracking & Reports          |
                               | - test_cases.csv  (50 scenarios)         |
-                              | - test_results.csv (69 real executions)  |
-                              | - issues.csv (7 documented defects)      |
-                              | - SVG evidence files                      |
+                              | - test_results.csv (77 executions)       |
+                              | - issues.csv (8 documented defects)      |
+                              | - SVG UI mockups & log artifacts         |
                               +------------------------------------------+
                                                     |
                                                     v
@@ -101,8 +101,8 @@ OsdagBridge-Software-Testing/
 ├── README.md
 │
 ├── test_cases.csv                     # 50 documented test cases across 8 categories
-├── test_results.csv                   # 69 real execution records (JUnit XML export)
-├── issues.csv                         # Defect tracker with steps & evidence
+├── test_results.csv                   # 77 execution records (JUnit XML export)
+├── issues.csv                         # Defect tracker with 8 defects & evidence
 │
 ├── scripts/
 │   └── export_junit_csv.py            # Converts JUnit XML → test_results.csv
@@ -126,12 +126,12 @@ OsdagBridge-Software-Testing/
 │   │   ├── test_validation.py        # Input validation boundary checks
 │   │   └── test_models.py            # QA reference model unit tests
 │   ├── integration/
-│   │   ├── test_official_application.py   # Official package smoke tests
+│   │   ├── test_official_application.py   # Official package functional tests
 │   │   └── test_plate_girder_pipeline.py  # Upstream blocker documentation
 │   ├── ui_simulation/
 │   │   └── test_ui_state_simulation.py    # UI state machine simulation tests
 │   └── regression/
-│       └── test_regression.py        # Regression guards for fixed defects
+│       └── test_regression.py        # Regression guards for verified defects
 │
 ├── test_data/
 │   ├── valid_inputs/                  # Valid 16m/24m plate girder payloads
@@ -146,7 +146,7 @@ OsdagBridge-Software-Testing/
 │
 └── reports/
     ├── logs/
-    ├── screenshots/                   # SVG evidence files (OB-001 through OB-012)
+    ├── screenshots/                   # SVG UI mockup & wireframe artifacts (OB-001 through OB-012)
     └── test_results/                  # JUnit XML & HTML reports
 ```
 
@@ -200,7 +200,7 @@ export OSDAGBRIDGE_ROOT="../OsdagBridge"
 ## 🧪 Executing the Test Suite
 
 ```bash
-# Run all 76 automated tests
+# Run all 77 automated tests
 python -m pytest tests -v
 
 # Run with HTML report
@@ -231,7 +231,7 @@ streamlit run app.py
 **Dashboard sections:**
 1. **QA Executive Dashboard** — KPIs computed from real CSV data, pass-rate gauges
 2. **Test Case Repository** — 50 scenarios with filterable category, status, and execution type
-3. **Defect Tracker** — 7 defects with severity/priority filter, evidence images, live append form
+3. **Defect Tracker** — 8 defects with severity/priority filter, evidence images, live append form
 4. **Automated Test Runner** — Triggers real `pytest` subprocess from the browser; shows live stdout
 5. **Bridge Verification Engine** — Powered by `osdagbridge_core` (independent QA reference)
 6. **Documentation Center** — Full-text viewer for all 10 QA deliverables
@@ -298,10 +298,10 @@ Tracked defects in `issues.csv` — detailing upstream defects in `osdag-admin/O
 
 - [x] **Official OsdagBridge integration** — `tests/integration/` functional & blocker tests with honest fail/skip handling
 - [x] **50 documented test cases** — `test_cases.csv` with preconditions, steps, and expected results (90.0% application pass rate, isolating 5 failed/blocked scenarios)
-- [x] **76 automated Pytest tests** — comprehensive suite; `test_results.csv` regenerated from real JUnit XML
+- [x] **77 automated Pytest tests** — comprehensive suite (74 passed, 3 xfailed); `test_results.csv` regenerated from real JUnit XML
 - [x] **UI state simulation** — desktop & form workflow state machine in `tests/ui_simulation/`
 - [x] **8 reproducible defects** — `issues.csv` with severity, priority, evidence, reproduction steps, and regression guards
-- [x] **76 real execution records** — `test_results.csv` exported by `scripts/export_junit_csv.py`
+- [x] **77 real execution records** — `test_results.csv` exported by `scripts/export_junit_csv.py`
 - [x] **CI pipeline** — multi-OS GitHub Actions, fails on test failure (no `|| true` suppression)
 - [x] **Streamlit QA dashboard** — dynamic KPIs from live data, live Pytest runner, calculation verifier
 - [x] **10 documentation deliverables** — `documentation/` (plan, strategy, environment, limitations, checklist…)

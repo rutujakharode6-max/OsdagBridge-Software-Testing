@@ -123,6 +123,7 @@ class DesignSummary:
     shear_capacity: float            # kN
     max_deflection: float            # mm
     allowable_deflection: float      # mm
+    impact_factor: float = 0.0       # Clamped impact factor per IRC:6 Cl 208
     checks: List[DesignCheckResult] = field(default_factory=list)
     failure_reasons: List[str] = field(default_factory=list)
 

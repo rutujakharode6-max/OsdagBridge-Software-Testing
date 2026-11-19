@@ -210,6 +210,7 @@ class BridgeSolver:
             shear_capacity=round(V_capacity, 2),
             max_deflection=round(delta_ll, 2),
             allowable_deflection=round(delta_allowable, 2),
+            impact_factor=round(impact_factor, 4),
             checks=checks,
             failure_reasons=failure_reasons
         )

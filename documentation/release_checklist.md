@@ -1,9 +1,11 @@
 # QA Release & Submission Checklist
 
 ## 1. Overview
-This 23-point release checklist serves as the final quality gate before submitting the **OsdagBridge Software Testing & Issue Reporting** project for evaluation, portfolio review, and production deployment.
+This 23-point release checklist serves as the formal quality gate for the **OsdagBridge Software Testing & Issue Reporting** QA portfolio project.
 
-All 23 checkpoints have been verified and passed.
+Rather than granting unconditional release approval while upstream application blockers remain open, this checklist honestly distinguishes between:
+1. **QA Testing Suite & Reference Framework:** Fully verified, reproducible, and passing.
+2. **Target Upstream Application (`osdag-admin/OsdagBridge`):** Conditionally blocked pending upstream fixes for critical import and calculation defects (OB-BUG-001, OB-BUG-002, OB-BUG-003, OB-BUG-008).
 
 ---
 
@@ -17,7 +19,7 @@ All 23 checkpoints have been verified and passed.
 - [x] **Check 03: Modern Git Configuration**  
   `.gitignore` excludes Python bytecode (`__pycache__`), `.pytest_cache`, OS artifacts, and temporary test outputs.
 - [x] **Check 04: Verified Dependency Manifest**  
-  `requirements.txt` specifies tested versions (`pytest`, `streamlit`, `pandas`, `pytest-cov`, `pytest-html`, `numpy`).
+  `requirements.txt` specifies tested versions (`pytest`, `streamlit`, `pandas`, `pytest-cov`, `pytest-html`, `altair`).
 
 ---
 
@@ -26,24 +28,24 @@ All 23 checkpoints have been verified and passed.
   Complete test specification covering all 8 functional categories with 12 structured RFC 4180 CSV columns.
 - [x] **Check 06: Preconditions and Test Steps Populated**  
   Every test scenario contains clear preconditions, actionable multi-step instructions, expected outputs, and severity tags.
-- [x] **Check 07: 50 Executed Test Results (`test_results.csv`)**  
-  All 50 scenarios contain execution timestamps, actual observed outcomes, durations in seconds, and status (`PASS`).
+- [x] **Check 07: 50 Executed Test Results (`reports/test_results.csv`)**  
+  All 50 scenarios contain execution timestamps, actual observed outcomes, durations in seconds, and honest statuses (**45 Passed, 2 Failed, 3 Blocked — 90.0% Pass Rate**).
 - [x] **Check 08: Consistent Metric Reconciliations**  
-  Clear distinction maintained across documentation between the **50 Documented Test Scenarios** and the **71 Automated Pytest Functions**.
+  Clear distinction maintained across documentation between the **50 Documented Test Scenarios** and the **77 Automated Pytest Functions**.
 
 ---
 
 ### Section C: Automated Pytest Testing Suite
-- [x] **Check 09: 71 Automated Pytest Functions**  
-  Automated tests organized into `tests/unit/`, `tests/integration/`, `tests/gui/`, and `tests/regression/`.
-- [x] **Check 10: 100% Pass Rate**  
-  Executing `python run_tests.py` runs all 71 tests in $< 0.4\text{s}$ with 0 failures, 0 errors, and 0 warnings.
+- [x] **Check 09: 77 Automated Pytest Functions**  
+  Automated tests organized into `tests/unit/`, `tests/integration/`, `tests/ui_simulation/`, and `tests/regression/`.
+- [x] **Check 10: Clean Execution & Upstream Blocker Isolation**  
+  Executing `python -m pytest tests` runs all 77 tests in $< 0.6\text{s}$ with **74 Passed, 3 Expected Failures (XFAIL)**, 0 unexpected errors, and 0 warnings.
 - [x] **Check 11: Official Integration Test Coverage**  
-  Official application discovery, package imports, and DTO data structures tested in `tests/integration/`.
+  Official application discovery, CLI functions, unit helpers, and CAD exporter tested in `tests/integration/`.
 - [x] **Check 12: Desktop & GUI Workflow Verification**  
-  Desktop bootstrap stub (`OB-BUG-002`) and simulated UI state machines tested in `tests/gui/`.
+  Desktop bootstrap stub (`OB-BUG-002`) and simulated UI state machines tested in `tests/ui_simulation/`.
 - [x] **Check 13: Regression Test Coverage**  
-  Automated regression tests guard all discovered defects (`OB-BUG-001` through `OB-BUG-007`).
+  Automated regression tests guard all verified defects (`OB-BUG-004` through `OB-BUG-007`) by calling real engine methods.
 - [x] **Check 14: Automated Test Runner Script**  
   `run_tests.py` executes pytest via Python's standard `subprocess` and returns proper exit codes.
 
@@ -51,11 +53,11 @@ All 23 checkpoints have been verified and passed.
 
 ### Section D: Defect Tracking & Bug Register
 - [x] **Check 15: Authentic, Reproducible Defect Records (`issues.csv`)**  
-  7 genuine issues documented with reproducible steps, expected vs. actual behaviors, and environment details.
+  8 genuine issues documented with reproducible steps, expected vs. actual behaviors, and environment details.
 - [x] **Check 16: Upstream Defect Classification**  
-  Issues correctly triaged with severities (`Critical`, `High`, `Medium`, `Low`) and priorities (`P1`–`P4`).
-- [x] **Check 17: Visual Evidence & Proof Artifacts**  
-  SVG cards and logs generated in `reports/screenshots/` and linked to respective defect IDs.
+  Issues correctly triaged with severities (`Critical`, `High`, `Medium`, `Low`), priorities (`P1`–`P4`), and explicit component scopes.
+- [x] **Check 17: Visual Evidence & Wireframe Artifacts**  
+  SVG UI mockups and execution logs generated in `reports/screenshots/` and linked to respective defect IDs as UI wireframe evidence.
 - [x] **Check 18: Dynamic Bug Submission Form**  
   Streamlit dashboard form appends newly reported bugs directly to `issues.csv` and auto-refreshes data.
 
@@ -67,7 +69,7 @@ All 23 checkpoints have been verified and passed.
 - [x] **Check 20: Interactive Bridge Solver & Verification**  
   Interactive UI dynamically calculates IRC:24 moment, shear, and deflection, generating downloadable Markdown and HTML reports.
 - [x] **Check 21: Multi-OS GitHub Actions CI (`.github/workflows/qa.yml`)**  
-  CI workflow runs on `ubuntu-latest` and `windows-latest` across Python 3.11 and 3.12 using updated GitHub Actions (`v4`/`v5`).
+  CI workflow runs on `ubuntu-latest` and `windows-latest` across Python 3.11 and 3.12 without suppression (`|| true` removed), uploading artifacts on all runs.
 - [x] **Check 22: One-Click Streamlit Cloud Deployability**  
   `app.py` and `requirements.txt` reside in root directory for instant deployment on Streamlit Community Cloud.
 
@@ -91,6 +93,7 @@ All 23 checkpoints have been verified and passed.
 ---
 
 ## 3. Sign-off & Recommendation
-- **QA Intern / Lead:** Arun Sharma, Structural QA
-- **Evaluation Status:** **APPROVED FOR SUBMISSION & DEPLOYMENT**
+- **QA Contributor / Intern:** Rutuja Kharode (`rutujakharode6-max`)
+- **Evaluation Status:** **CONDITIONALLY VERIFIED — QA SUITE PASSING; UPSTREAM APPLICATION BLOCKERS DOCUMENTED**
+- **Deployment Recommendation:** The QA testing framework, test matrix, documentation, and Streamlit analytics dashboard are fully verified and ready for portfolio evaluation. The official application deployment remains blocked upstream until IIT Bombay / Osdag maintains `models.py` and structural solvers.
 - **Date:** November 2026

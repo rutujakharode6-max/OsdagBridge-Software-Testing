@@ -147,3 +147,16 @@ class ReportGenerator:
 </body>
 </html>"""
         return html
+
+    @classmethod
+    def export_report_file(cls, file_path, content: str):
+        """
+        Safely writes report content to the designated filepath.
+        Encodes with UTF-8 to handle Unicode directories and special characters gracefully.
+        """
+        from pathlib import Path
+        path = Path(file_path)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(content)
+        return path
