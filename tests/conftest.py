@@ -1,7 +1,13 @@
-"""Shared fixtures for OsdagBridge QA tests."""
+"""
+Shared fixtures for OsdagBridge QA tests.
+NOTE: No fake module shims or monkeypatched module stubs are used.
+All official application imports run directly against genuine source checkouts,
+ensuring upstream defects and blockers are honestly surfaced and verified.
+"""
 import json
 import os
 from pathlib import Path
+import sys
 import pytest
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]

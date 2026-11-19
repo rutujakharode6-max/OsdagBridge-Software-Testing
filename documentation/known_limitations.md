@@ -53,8 +53,8 @@ This document logs these known limitations, explaining their root cause, technic
 ### 2.4 Missing `models.py` in `osdagbridge.core` (Upstream Bug OB-BUG-008)
 - **Impact:** High (P1)
 - **Symptom:** `src/osdagbridge/core/__init__.py` contains `from .models import *`, but `models.py` does not exist in the official repository repository tree, causing an unhandled `ModuleNotFoundError` on package import.
-- **QA Workaround:** In `tests/conftest.py`, a dynamic module shim injects `sys.modules["osdagbridge.core.models"] = types.ModuleType("osdagbridge.core.models")` before importing submodules.
-- **Status:** Guarded by test fixtures and verified across all CI runners.
+- **QA Strategy:** No artificial module shims or fake `types.ModuleType` mocks are injected into `tests/conftest.py`. The QA suite directly executes `import osdagbridge.core` and verifies that `ModuleNotFoundError` is raised cleanly, honestly tracking this upstream defect without masking real application failure modes.
+- **Status:** Verified and guarded by integration test `tests/integration/test_plate_girder_pipeline.py::test_official_core_import_blocked_by_missing_models`.
 
 ---
 

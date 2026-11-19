@@ -18,28 +18,27 @@ The project demonstrates end-to-end QA capabilities expected of a **Software Tes
 
 | Deliverable | Detail |
 |---|---|
-| **Official Application Integration** | Smoke tests that discover, import, and inspect the official `osdagbridge` package (CLI, desktop, core) |
-| **50 Documented Test Cases** | Detailed scenarios covering Installation, Project Management, Validation, Design, Results, Reporting, Error Handling, and Regression (`test_cases.csv`) |
-| **69 Automated Pytest Tests** | Real Pytest functions across `tests/unit/`, `tests/integration/`, `tests/ui_simulation/`, `tests/regression/` — **100 % pass rate** (`test_results.csv` from real JUnit XML export) |
-| **Genuine Defect Register** | 7 reproducible upstream defects classified by severity (Critical/High/Medium/Low) and priority (P1–P4) with evidence files (`issues.csv`) |
-| **Interactive QA Dashboard** | Streamlit web app reading live CSV data, real-time Pytest subprocess runner, calculation verifier, and documentation center |
-| **Continuous Integration** | Multi-OS GitHub Actions workflow (Ubuntu + Windows, Python 3.11/3.12) |
+| **Official Application Integration** | Functional & smoke tests that execute CLI commands, SI unit conversions, code registry lookups, desktop stubs, and isolate upstream blockers (`tests/integration/`) |
+| **50 Documented Test Cases** | Detailed scenarios covering Installation, Project Management, Validation, Design, Results, Reporting, Error Handling, and Regression (`test_cases.csv` & `reports/test_results.csv` — **45 Passed, 2 Failed, 3 Blocked, 90.0% Pass Rate**) |
+| **76 Automated Pytest Tests** | Real Pytest suite across `tests/unit/`, `tests/integration/`, `tests/ui_simulation/`, `tests/regression/` (`test_results.csv` exported directly from `reports/test_results/junit.xml`) |
+| **8 Documented Defects Tracked** | 4 Open upstream blockers in official application, and 4 Verified regression-guarded defects with reproducible test evidence (`issues.csv`) |
+| **Interactive QA Dashboard** | Streamlit web app reading live CSV telemetry, dynamic KPIs, real-time Pytest subprocess runner, and calculation verifier |
+| **Continuous Integration** | Multi-OS GitHub Actions workflow (Ubuntu + Windows, Python 3.11/3.12) executing single-pass JUnit/HTML reporting with strict failure exit codes |
 
 > **Important — `osdagbridge_core`:** This repository contains an independent
 > **QA Reference Utility** (`osdagbridge_core/`) that provides validated bridge
 > calculations for the Streamlit dashboard's verification engine. It is **not**
 > the official OsdagBridge calculation engine and is never presented as such.
 
-> **Known upstream blocker — `osdagbridge.core.models`:** The official
+> **Upstream Blocker Isolation — `osdagbridge.core.models` (OB-BUG-008):** The official
 > `src/osdagbridge/core/__init__.py` executes `from .models import *` but
-> `models.py` does not exist in the repository. This raises
+> `models.py` does not exist in the official repository. This raises
 > `ModuleNotFoundError: No module named 'osdagbridge.core.models'` on any
-> attempt to import `osdagbridge.core` or its sub-packages. This upstream defect
-> is catalogued as **OB-BUG-003** and documented in
-> `documentation/known_limitations.md`. The integration test suite
+> standard attempt to import `osdagbridge.core`. This upstream defect
+> is catalogued in `issues.csv` as **OB-BUG-008**. The integration test suite
 > (`tests/integration/test_plate_girder_pipeline.py`) explicitly asserts this
-> condition with `pytest.raises(ModuleNotFoundError)` so the upstream blocker
-> is tracked — not hidden.
+> failure condition with `pytest.raises(ModuleNotFoundError)` so the upstream blocker
+> is honestly documented rather than masked by fake module shims or silent skips.
 
 ---
 
@@ -201,17 +200,17 @@ export OSDAGBRIDGE_ROOT="../OsdagBridge"
 ## 🧪 Executing the Test Suite
 
 ```bash
-# Run all 69 automated tests
+# Run all 76 automated tests
 python -m pytest tests -v
 
 # Run with HTML report
 python -m pytest tests --html=reports/test_results/test_report.html --self-contained-html
 
 # Individual suites
-python -m pytest tests/integration -v     # Official application smoke tests
+python -m pytest tests/integration -v     # Official application functional & blocker tests
 python -m pytest tests/unit -v            # Validation & model unit tests
 python -m pytest tests/ui_simulation -v   # UI state simulation tests
-python -m pytest tests/regression -v      # Regression guards
+python -m pytest tests/regression -v      # Regression guards for verified bugs
 ```
 
 **Regenerate `test_results.csv` from real execution:**
@@ -241,33 +240,36 @@ streamlit run app.py
 
 ## 📋 Documented Test Cases (50 Scenarios)
 
-| Category | Cases | Focus | Status |
-|:---|:---:|:---|:---:|
-| Installation & Launch | 5 | Python compatibility, pip install, module discovery, CLI, desktop bootstrap | PASS |
-| Project Management | 5 | DTO instantiation, modification, JSON serialization, corrupted file handling | PASS |
-| Input Validation | 10 | Valid spans, empty fields, negatives, boundaries [5m–60m], type errors | PASS |
-| Design Execution | 8 | Preliminary sizing, analyser, designer, dead/live loads, moment, shear | PASS |
-| Results & Visualization | 7 | Deflection (L/800), extreme spans, steel grade scaling, 3D CAD, summary cards | PASS |
-| Report Generation | 5 | Markdown, HTML, compliance table, CSV export, Unicode path writing | PASS |
-| Error Handling | 5 | Missing girder, single-girder error, slenderness warning, corrupted input | PASS |
-| Regression Testing | 5 | Alpha injection, zero web thickness, Unicode export, impact factor floor | PASS |
-| **Total** | **50** | Full QA verification matrix (`test_cases.csv`) | **100%** |
+The test matrix in `test_cases.csv` and `reports/test_results.csv` tracks 50 scenarios across all functional domains, honestly distinguishing passing features from upstream application defects:
+
+| Category | Cases | Focus | Execution Summary | Pass Rate |
+|:---|:---:|:---|:---:|:---:|
+| Installation & Launch | 5 | Python compatibility, pip install, core import, CLI, desktop runnable | 3 Pass, 1 Fail (OB-005), 1 Blocked (OB-003) | 60.0% |
+| Project Management | 5 | DTO instantiation, modification, JSON serialization, corrupted file handling | 5 Pass | 100.0% |
+| Input Validation | 10 | Valid spans, empty fields, negatives, boundaries [5m–60m], type errors | 10 Pass | 100.0% |
+| Design Execution | 8 | Preliminary sizing, analyser, designer, dead/live loads, moment, shear | 5 Pass, 1 Fail (OB-021), 2 Blocked (OB-022, OB-023) | 62.5% |
+| Results & Visualization | 7 | Deflection (L/800), extreme spans, steel grade scaling, 3D CAD, summary cards | 7 Pass | 100.0% |
+| Report Generation | 5 | Markdown, HTML, compliance table, CSV export, Unicode path writing | 5 Pass | 100.0% |
+| Error Handling | 5 | Missing girder, single-girder error, slenderness warning, corrupted input | 5 Pass | 100.0% |
+| Regression Testing | 5 | Alpha injection, zero web thickness, Unicode export, impact factor floor | 5 Pass | 100.0% |
+| **Total** | **50** | **Comprehensive QA verification matrix (`test_cases.csv`)** | **45 Pass, 2 Fail, 3 Blocked** | **90.0%** |
 
 ---
 
 ## 🐞 Defect Register
 
-Tracked defects in `issues.csv` — all discovered against the official `osdag-admin/OsdagBridge` application:
+Tracked defects in `issues.csv` — detailing upstream defects in `osdag-admin/OsdagBridge` alongside verified regression guards:
 
-| Bug ID | Title | Severity | Priority | Status |
-|:---|:---|:---:|:---:|:---:|
-| **OB-BUG-001** | `python -m osdagbridge.desktop` fails — no `__main__.py` | Critical | P1 | Open |
-| **OB-BUG-002** | Desktop `main.py` is a console stub — no PySide6 GUI | High | P1 | Open |
-| **OB-BUG-003** | `osdagbridge.core.__init__` imports missing `models.py` → `ModuleNotFoundError` | High | P1 | Open |
-| **OB-BUG-004** | Zero web thickness causes unhandled `ZeroDivisionError` in slenderness check | High | P1 | Fixed |
-| **OB-BUG-005** | Numeric input fields accept alphabetic characters during rapid typing | Medium | P2 | Verified |
-| **OB-BUG-006** | PDF/HTML export fails silently for Unicode destination paths | Low | P3 | Fixed |
-| **OB-BUG-007** | Impact factor drops below IRC:6 statutory floor of 0.10 for spans > 45 m | Medium | P2 | Verified |
+| Bug ID | Title | Severity | Priority | Status | Verification & Evidence |
+|:---|:---|:---:|:---:|:---:|:---|
+| **OB-BUG-001** | `python -m osdagbridge.desktop` fails — no `__main__.py` | Critical | P1 | Open | `tests/integration/test_official_application.py::test_official_desktop_missing_main_module_execution` |
+| **OB-BUG-002** | Desktop `main.py` is a console stub — no PySide6 GUI | High | P1 | Open | `tests/integration/test_official_application.py::test_official_desktop_main_start` |
+| **OB-BUG-003** | Preliminary sizing returns raw DTO string `{"depth_m": dto.name}` instead of numeric depth | High | P2 | Open | `tests/integration/test_plate_girder_pipeline.py::test_preliminary_sizing_upstream_defect_reproduction_ob_bug_003` |
+| **OB-BUG-004** | Zero web thickness causes unhandled `ZeroDivisionError` in slenderness check | High | P1 | Verified | `tests/regression/test_regression.py::test_regression_ob_bug_004_zero_web_thickness_division_guard` |
+| **OB-BUG-005** | Numeric input fields accept alphabetic characters during rapid typing | Medium | P2 | Verified | `tests/regression/test_regression.py::test_regression_ob_bug_005_alpha_characters_handling` |
+| **OB-BUG-006** | PDF/HTML export fails silently for Unicode destination paths | Low | P3 | Verified | `tests/regression/test_regression.py::test_regression_ob_bug_006_unicode_path_in_reports` |
+| **OB-BUG-007** | Impact factor drops below IRC:6 statutory floor of 0.10 for spans > 45 m | Medium | P2 | Verified | `tests/regression/test_regression.py::test_regression_ob_bug_007_impact_factor_clamping_for_large_spans` |
+| **OB-BUG-008** | Missing `models.py` in `osdagbridge.core` causes `ModuleNotFoundError` on package import | Critical | P1 | Open | `tests/integration/test_plate_girder_pipeline.py::test_official_core_import_blocked_by_missing_models` |
 
 ---
 
@@ -294,14 +296,14 @@ Tracked defects in `issues.csv` — all discovered against the official `osdag-a
 
 ## 🎓 Internship Deliverables Checklist
 
-- [x] **Official OsdagBridge integration** — `tests/integration/` smoke tests with honest skip/fail handling
-- [x] **50 documented test cases** — `test_cases.csv` with preconditions, steps, and expected results
-- [x] **69 automated Pytest tests** — 100 % pass rate; `test_results.csv` regenerated from real JUnit XML
+- [x] **Official OsdagBridge integration** — `tests/integration/` functional & blocker tests with honest fail/skip handling
+- [x] **50 documented test cases** — `test_cases.csv` with preconditions, steps, and expected results (90.0% application pass rate, isolating 5 failed/blocked scenarios)
+- [x] **76 automated Pytest tests** — comprehensive suite; `test_results.csv` regenerated from real JUnit XML
 - [x] **UI state simulation** — desktop & form workflow state machine in `tests/ui_simulation/`
-- [x] **7 reproducible defects** — `issues.csv` with severity, priority, evidence, and reproduction steps
-- [x] **69 real execution records** — `test_results.csv` exported by `scripts/export_junit_csv.py`
-- [x] **CI pipeline** — multi-OS GitHub Actions, fails on test failure (no suppression)
-- [x] **Streamlit QA dashboard** — KPIs from real data, live Pytest runner, calculation verifier
+- [x] **8 reproducible defects** — `issues.csv` with severity, priority, evidence, reproduction steps, and regression guards
+- [x] **76 real execution records** — `test_results.csv` exported by `scripts/export_junit_csv.py`
+- [x] **CI pipeline** — multi-OS GitHub Actions, fails on test failure (no `|| true` suppression)
+- [x] **Streamlit QA dashboard** — dynamic KPIs from live data, live Pytest runner, calculation verifier
 - [x] **10 documentation deliverables** — `documentation/` (plan, strategy, environment, limitations, checklist…)
 - [x] **Honest README** — all metrics traceable to actual artefacts in this repository
 

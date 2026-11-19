@@ -61,6 +61,12 @@ jobs:
         run: |
           python -m pytest tests -v --tb=short --junitxml=reports/test_results/junit.xml --html=reports/test_results/test_report.html --self-contained-html
 
+      - name: Synchronize test results CSV from JUnit XML
+        if: always()
+        working-directory: OsdagBridge-Software-Testing
+        run: |
+          python scripts/export_junit_csv.py reports/test_results/junit.xml test_results.csv
+
       - name: Upload QA artifacts
         if: always()
         uses: actions/upload-artifact@v4

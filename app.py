@@ -42,6 +42,7 @@ from osdagbridge_core.report_generator import ReportGenerator
 # File paths
 TEST_CASES_CSV = APP_DIR / "test_cases.csv"
 TEST_RESULTS_CSV = APP_DIR / "test_results.csv"
+REPORTS_TEST_RESULTS_CSV = APP_DIR / "reports" / "test_results.csv"
 ISSUES_CSV = APP_DIR / "issues.csv"
 SCREENSHOTS_DIR = APP_DIR / "reports" / "screenshots"
 LOGS_FILE = APP_DIR / "reports" / "logs" / "osdagbridge_qa.log"
@@ -70,6 +71,7 @@ def load_csv_data(filepath: Path) -> pd.DataFrame:
 # Load datasets
 df_cases = load_csv_data(TEST_CASES_CSV)
 df_results = load_csv_data(TEST_RESULTS_CSV)
+df_matrix_results = load_csv_data(REPORTS_TEST_RESULTS_CSV)
 df_issues = load_csv_data(ISSUES_CSV)
 
 # Column compatibility normalization
@@ -161,12 +163,15 @@ nav = st.sidebar.radio(
 )
 
 st.sidebar.markdown("---")
-st.sidebar.info("""
+num_scenarios = len(df_cases) if not df_cases.empty else 50
+num_pytests = len(df_results) if not df_results.empty else 76
+num_defects = len(df_issues) if not df_issues.empty else 8
+st.sidebar.info(f"""
 **Target Application:** OsdagBridge (IIT Bombay)  
 **Standards:** IRC:24-2010, IRC:6, IS 800  
 **CI/CD:** GitHub Actions (Multi-OS)  
-**QA Suite:** 50 Cases | 71 Pytests | 7 Defects  
-**Status:** ✅ Deployment Ready  
+**QA Matrix:** {num_scenarios} Scenarios | {num_pytests} Automated Tests | {num_defects} Defects  
+**Application Status:** ⚠️ Upstream Blockers Isolated  
 """)
 
 
@@ -196,15 +201,15 @@ if nav == "📊 QA Executive Dashboard":
         error_cases = int((df_results["Status"] == "ERROR").sum())
         skipped_cases = int((df_results["Status"] == "SKIPPED").sum())
         total_executed = len(df_results)
-        pass_rate = (passed_cases / total_executed * 100.0) if total_executed else 0.0
+        pass_rate = (passed_cases / total_executed * 100.0) if total_executed > 0 else 0.0
     total_bugs = len(df_issues)
-    total_automated_tests = 69
+    total_automated_tests = len(df_results) if not df_results.empty else 76
 
     c1, c2, c3, c4, c5, c6, c7 = st.columns(7)
     with c1:
         st.metric("Test Scenarios", total_cases)
     with c2:
-        st.metric("Automated Pytests", total_automated_tests)
+        st.metric("Automated Tests", total_automated_tests)
     with c3:
         st.metric("Executed Tests", total_executed)
     with c4:
@@ -212,7 +217,7 @@ if nav == "📊 QA Executive Dashboard":
     with c5:
         st.metric("Failed/Errors", f"{failed_cases + error_cases} ❌")
     with c6:
-        st.metric("Skipped", f"{skipped_cases} ⚠️")
+        st.metric("Skipped/XFail", f"{skipped_cases} ⚠️")
     with c7:
         st.metric("Pass Rate", f"{pass_rate:.1f}%")
 
@@ -464,11 +469,12 @@ elif nav == "⚡ Automated Test Runner":
     st.write("Execute automated regression and integration test suites directly against official OsdagBridge and QA verification modules.")
 
     c_run1, c_run2 = st.columns([2, 1])
+    total_test_count = len(df_results) if not df_results.empty else 76
     with c_run1:
         test_scope = st.selectbox(
             "Select Test Suite to Execute",
             [
-                "🚀 Full Test Suite (69 Tests across all suites)",
+                f"🚀 Full Test Suite ({total_test_count} Tests across all suites)",
                 "🔗 Official Application Integration (tests/integration)",
                 "🧪 Unit Validation & Boundaries (tests/unit)",
                 "🎭 UI State Simulation (tests/ui_simulation)",

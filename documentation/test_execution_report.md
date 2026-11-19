@@ -11,26 +11,26 @@
 The automated QA suite executed **50 structured test cases** across 8 testing categories. Testing verified both official OsdagBridge modules (`osdagbridge.core`, `osdagbridge.desktop`, `osdagbridge.cli`) and the structural verification rule engine.
 
 - **Total Test Cases Executed:** 50
-- **Passed:** 50 (100%)
-- **Failed:** 0 (0%)
-- **Blocked / Skipped:** 0 (0%)
-- **Overall Quality Rating:** **READY FOR RELEASE / INTEGRATION**
+- **Passed:** 45 (90.0%)
+- **Failed:** 2 (4.0% — OB-005, OB-021)
+- **Blocked:** 3 (6.0% — OB-003, OB-022, OB-023)
+- **Overall Quality Rating:** **CONDITIONALLY VERIFIED / UPSTREAM DEFECTS ISOLATED & LOGGED**
 
 ---
 
 ### 2.0 Test Execution Breakdown by Category
 
-| Category | Planned Cases | Executed | Passed | Failed | Pass Rate |
-| :--- | :---: | :---: | :---: | :---: | :---: |
-| **1. Installation & Launch** | 5 | 5 | 5 | 0 | 100.0% |
-| **2. Project Management** | 5 | 5 | 5 | 0 | 100.0% |
-| **3. Input Validation** | 10 | 10 | 10 | 0 | 100.0% |
-| **4. Design Execution** | 8 | 8 | 8 | 0 | 100.0% |
-| **5. Results & Visualization**| 7 | 7 | 7 | 0 | 100.0% |
-| **6. Report Generation** | 5 | 5 | 5 | 0 | 100.0% |
-| **7. Error Handling** | 5 | 5 | 5 | 0 | 100.0% |
-| **8. Regression Testing** | 5 | 5 | 5 | 0 | 100.0% |
-| **Total** | **50** | **50** | **50** | **0** | **100.0%** |
+| Category | Planned Cases | Executed | Passed | Failed | Blocked | Pass Rate |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| **1. Installation & Launch** | 5 | 5 | 3 | 1 | 1 | 60.0% |
+| **2. Project Management** | 5 | 5 | 5 | 0 | 0 | 100.0% |
+| **3. Input Validation** | 10 | 10 | 10 | 0 | 0 | 100.0% |
+| **4. Design Execution** | 8 | 8 | 5 | 1 | 2 | 62.5% |
+| **5. Results & Visualization**| 7 | 7 | 7 | 0 | 0 | 100.0% |
+| **6. Report Generation** | 5 | 5 | 5 | 0 | 0 | 100.0% |
+| **7. Error Handling** | 5 | 5 | 5 | 0 | 0 | 100.0% |
+| **8. Regression Testing** | 5 | 5 | 5 | 0 | 0 | 100.0% |
+| **Total** | **50** | **50** | **45** | **2** | **3** | **90.0%** |
 
 ---
 
@@ -53,15 +53,16 @@ The automated QA suite executed **50 structured test cases** across 8 testing ca
 
 ### 4.0 Defect Verification Status
 
-| Bug ID | Title | Severity | Status | Verification Reference |
+| Bug ID | Title | Severity | Status | Verification Reference & Reproducible Evidence |
 | :--- | :--- | :---: | :---: | :--- |
-| **OB-BUG-001** | Desktop launch missing `__main__.py` | Critical | Open | Documented in `issues.csv` |
-| **OB-BUG-002** | Desktop bootstrap console stub | High | Open | Documented in `issues.csv` |
-| **OB-BUG-003** | Preliminary sizing string return | High | Open | Documented in `issues.csv` |
-| **OB-BUG-004** | Zero web thickness `ZeroDivisionError` | High | Fixed | Regression test `REG-02` PASSED |
-| **OB-BUG-005** | Numeric input raw string injection | Medium | Verified | Regression test `REG-01` PASSED |
-| **OB-BUG-006** | Unicode filepath export failure | Low | Fixed | Regression test `REG-04` PASSED |
-| **OB-BUG-007** | Impact factor unclamped for $L > 45\text{m}$ | Medium | Verified | Regression test `REG-05` PASSED |
+| **OB-BUG-001** | Desktop launch missing `__main__.py` | Critical | Open | `tests/integration/test_official_application.py::test_official_desktop_missing_main_module_execution` |
+| **OB-BUG-002** | Desktop bootstrap console stub | High | Open | `tests/integration/test_official_application.py::test_official_desktop_main_start` |
+| **OB-BUG-003** | Preliminary sizing string return | High | Open | `tests/integration/test_plate_girder_pipeline.py::test_preliminary_sizing_upstream_defect_reproduction_ob_bug_003` |
+| **OB-BUG-004** | Zero web thickness `ZeroDivisionError` | High | Verified | `tests/regression/test_regression.py::test_regression_ob_bug_004_zero_web_thickness_division_guard` |
+| **OB-BUG-005** | Numeric input raw string injection | Medium | Verified | `tests/regression/test_regression.py::test_regression_ob_bug_005_alpha_characters_handling` |
+| **OB-BUG-006** | Unicode filepath export failure | Low | Verified | `tests/regression/test_regression.py::test_regression_ob_bug_006_unicode_path_in_reports` |
+| **OB-BUG-007** | Impact factor unclamped for $L > 45\text{m}$ | Medium | Verified | `tests/regression/test_regression.py::test_regression_ob_bug_007_impact_factor_clamping_for_large_spans` |
+| **OB-BUG-008** | Missing `models.py` in `osdagbridge.core` | Critical | Open | `tests/integration/test_plate_girder_pipeline.py::test_official_core_import_blocked_by_missing_models` |
 
 ---
 
